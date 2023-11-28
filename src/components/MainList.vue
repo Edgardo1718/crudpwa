@@ -1,55 +1,57 @@
 
 
 <template>
-    <div class="h-[calc(100vh-120px)] bg-gray-100 p-[20px]">
-        <div
-            class="container-lg max-w-7xl mt-6 bg-white mx-auto  shadow-lg shadow-slate-300 border border-gray-300 rounded-md p-[40px] ">
+    <div class="bg-gray-200 min-h-screen">
+    <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-bold tracking-tight text-gray-900">Notas</h2>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
+                    type="button"
+                    @click="showAddTaskModal = true">
+                +
+            </button>
+           
+        </div>
 
-            <div class="text-right m-5">
-
-                <button
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
-                    type="button" @click="showAddTaskModal = true">
-                    +
-                </button>
+        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+            <div v-for="(task, taskId) in taskList" class="group relative">
+                <div class="mt-4 flex justify-between shadow-md rounded-lg p-4 bg-white flex-col">
+    <div style="flex: 1;">
+        <img v-if="task.photo" :src="task.photo" alt="Foto de la tarea" class="w-full h-auto rounded-md mb-2" />
+        <div class="flex justify-between items-start">
+            <div>
+                <h2 class="text-lg font-bold text-gray-700">{{ task.title }}</h2>
+                <p class="mt-1 text-sm text-gray-500 w-full">{{ task.description }}</p>
             </div>
-            <div class="">
-                <table class="w-full text-xl text-left    border border-slate-200 border-2 ">
-                    <thead class="bg-gray-600 text-white ">
-                        <tr>
-                            <th class="border border-slate-300 p-[10px]">Title</th>
-                            <th class="border border-slate-300 p-[10px]">Description</th>
-                            <th class="border border-slate-300  p-[10px]">Status</th>
-                            <th class="border border-slate-300  p-[10px]">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(task, taskId) in taskList">
-                            <td class="border border-slate-300 rounded-xl p-[10px]">{{ task.title }}</td>
-                            <td class="border border-slate-300 rounded-xl p-[10px]">{{ task.description }}</td>
-                            <td class="border border-slate-300 rounded-xl p-[10px]">{{ task.status }}</td>
-                            <td class="border border-slate-300 rounded-xl p-[10px]">
-                                <!-- Trigger button to open the delete modal -->
-                                <button class="mr-4" @click="openDeleteModal(taskId)"><i class="fa fa-trash"
-                                        aria-hidden="true"></i></button>
-                                <button @click="openEditModal(taskId)"><i class="fa fa-pencil"
-                                        aria-hidden="true"></i></button>
-                            </td>
+            <p class="text-sm font-medium" :class="{
+                'text-gray-900': task.status === 'Other',
+                'text-green-500': task.status === 'Complete',
+                'text-yellow-500': task.status === 'Review',
+                'text-red-500': task.status === 'Panding',
+            }">
+                {{ task.status }}
+            </p>
+        </div>
+    </div>
+    <div class="flex justify-center mt-auto">
+        <div class="flex space-x-2">
+            <button @click="openDeleteModal(taskId)" class="text-red-500"><i class="fa fa-trash" aria-hidden="true"></i></button>
+            <button @click="openEditModal(taskId)" class="text-blue-500"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+        </div>
+    </div>
+</div>
 
-                        </tr>
-                    </tbody>
-                </table>
             </div>
-            <AddTask v-if=showAddTaskModal @cancel="showAddTaskModal = false" @submitted="showAddTaskModal = false">
+        </div>
+    </div>
+    <AddTask v-if=showAddTaskModal @cancel="showAddTaskModal = false" @submitted="showAddTaskModal = false">
             </AddTask>
             <EditTask v-if=showEditTaskModal @cancel="showEditTaskModal = false" @submitted="showEditTaskModal = false"
                 :edit-id="editId"></EditTask>
-
-            <!-- Delete Modal -->
             <DeleteModal v-if="showDeleteModal" @cancel="showDeleteModal = false" @deleted="showDeleteModal = false"
                 :delete-id="deleteId" />
-        </div>
-    </div>
+</div>
+
 </template>
 
 <script >
@@ -86,6 +88,7 @@ export default {
             this.taskList = data
         })
     },
+    
     methods: {
         openDeleteModal(id) {
             this.deleteId = id
